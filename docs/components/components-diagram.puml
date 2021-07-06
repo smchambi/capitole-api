@@ -1,0 +1,15 @@
+@startuml components-diagram
+
+interface "GET /brands/{brandId}/products/{productId}" as ProductPriceInterface
+
+frame capitole-api {
+
+    node read <<web scope>> {
+        component "capitole-api: read" <<application>> as ProductPriceReadApp
+        database "capitole-db" <<H2>> as ProductPriceInMemoryDB
+    }
+
+    ProductPriceInterface --> ProductPriceReadApp
+    ProductPriceReadApp --> ProductPriceInMemoryDB
+}
+@enduml

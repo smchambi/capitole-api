@@ -1,0 +1,19 @@
+@startuml GET-product_price-400-mandatory_field
+autonumber
+
+actor Client
+
+box CapitoleAPI
+    participant ProductController
+    participant FindProductByBrandIdAndApplicationDate
+end box
+
+Client -> ProductController: GET /brands/{brandId}/products/{productId}?application={application}
+activate ProductController
+    ProductController -> FindProductByBrandIdAndApplicationDate: execute(InputValues inputValues)
+    activate FindProductByBrandIdAndApplicationDate
+        alt invalid brandId or productId or applicationDate
+            return throw validation error
+         return ErrorResult (statusCode: 400)
+        end
+@enduml

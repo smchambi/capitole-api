@@ -1,0 +1,30 @@
+@startuml GET-product_price-500-internal_error
+autonumber
+
+actor Client
+
+box CapitoleAPI
+    participant ProductController
+    participant FindProductByBrandIdAndApplicationDate
+    participant FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository
+    participant SqlRepository
+end box
+
+Client -> ProductController: GET /brands/{brandId}/products/{productId}?application={application}
+activate ProductController
+    ProductController -> FindProductByBrandIdAndApplicationDate: execute(InputValues inputValues)
+    activate FindProductByBrandIdAndApplicationDate
+        FindProductByBrandIdAndApplicationDate -> FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository: execute(Long productId, Long brandId, LocalDateTime applicationDate)
+        activate FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository
+            FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository -> FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository: retrieveProducts(Long productId, Long brandId, LocalDateTime applicationDate)
+            activate FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository
+                FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository -> SqlRepository: executeSelect(QueryStatement, ResultDataMapper<ProductPrice> mapper, Object ... args)
+                activate SqlRepository
+                    alt error executing query
+                        return throw repository error
+                    return throw repository error
+                    return throw repository error
+                    return throw repository error
+                    return ErrorResult(statusCode: 500)
+                    end
+@enduml

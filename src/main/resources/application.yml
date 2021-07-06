@@ -1,0 +1,37 @@
+spring:
+  flyway:
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    url: ${spring.datasource.url}
+    enabled: true
+    schemas: PUBLIC
+    baseline-on-migrate: true
+  datasource:
+    hikari:
+      maximum-pool-size: 15
+      idle-timeout: 600000
+      connection-timeout: 3000
+      pool-name: capitole
+      minimum-idle: 5
+    type: com.zaxxer.hikari.HikariDataSource
+    username: user
+    password: password
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=FALSE
+  h2:
+    console:
+      enabled: true
+      path: /h2
+springdoc:
+  swagger-ui:
+    operations-sorter: alpha
+    disable-swagger-default-url: true
+    path: /swagger-ui.html
+  packages-to-scan: com.capitole.entrypoint
+  show-actuator: true
+  paths-to-match: /**
+
+app:
+  title: Capitole API
+  description: 'Capitole API'
+  version: '0.0.1'

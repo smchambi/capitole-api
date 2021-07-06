@@ -1,0 +1,39 @@
+@startuml GET-product_price-404-not_found
+autonumber
+
+actor Client
+
+box CapitoleAPI
+    participant ProductController
+    participant FindProductByBrandIdAndApplicationDate
+    participant FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository
+    participant SqlRepository
+    database CapitoleDB
+end box
+
+Client -> ProductController: GET /brands/{brandId}/products/{productId}?application={application}
+activate ProductController
+    ProductController -> FindProductByBrandIdAndApplicationDate: execute(InputValues inputValues)
+    activate FindProductByBrandIdAndApplicationDate
+        FindProductByBrandIdAndApplicationDate -> FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository: execute(Long productId, Long brandId, LocalDateTime applicationDate)
+        activate FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository
+            FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository -> FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository: retrieveProducts(Long productId, Long brandId, LocalDateTime applicationDate)
+            activate FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository
+                FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository -> SqlRepository: executeSelect(QueryStatement, ResultDataMapper<ProductPrice> mapper, Object ... args)
+                activate SqlRepository
+                    SqlRepository -> CapitoleDB: SELECT ...
+                        activate CapitoleDB
+                        return results
+                return List<ProductPrice>
+            return List<ProductPrice>
+
+            FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository -> FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository: getHighestPriorityProductPrice(List<ProductPrice> results)
+                activate FindProductPriceByIdAndBrandIdAndApplicationDateDBRepository
+alt empty result
+                return empty result
+        return empty result
+
+    return throw no result found
+return ErrorResult(statusCode: 404)
+end
+@enduml
